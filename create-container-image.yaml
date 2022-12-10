@@ -8,8 +8,8 @@
     get_url:
       url: http://108.136.235.164:8082/artifactory/libs-release-local/com/iwayq/iwayQApp/1.0-RELEASE/iwayQApp-1.0-RELEASE.war
       dest: /home/imran/
-      url_username: admin
-      url_password: Manis123@
+      url_username: $isisendiriyaa
+      url_password: $isisendiriyaa
 
   - name: Rename .war Artifact
     command: mv iwayQApp-1.0-RELEASE.war iwayq.war
@@ -32,8 +32,8 @@
 
   - name: Log into DockerHub
     docker_login:
-     username: imransetiadi22
-     password: C3ri497adis77@
+     username: $isisendiriyaa
+     password: $isisendiriyaa
 
   - name: Push to docker hub
     docker_image:
