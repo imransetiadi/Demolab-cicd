@@ -1,0 +1,16 @@
+#Service Type nodePort
+apiVersion: v1
+kind: Service
+metadata:
+  name: maven-java
+  labels:
+    app: maven-java
+spec:
+  selector:
+    app: maven-java
+
+  type: LoadBalancer
+  ports:
+  - nodePort: 31000
+    port: 8080
+    targetPort: 8080

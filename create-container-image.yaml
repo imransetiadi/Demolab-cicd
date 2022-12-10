@@ -1,0 +1,44 @@
+#Create Custom Container Image
+#Push to DockerHub Registry
+---
+- hosts: localhost
+  tasks:
+  - name: Pull .war artifact from Artifactory
+    become: true
+    get_url:
+      url: http://108.136.235.164:8082/artifactory/libs-release-local/com/iwayq/iwayQApp/1.0-RELEASE/iwayQApp-1.0-RELEASE.war
+      dest: /home/imran/
+      url_username: admin
+      url_password: Manis123@
+
+  - name: Rename .war Artifact
+    command: mv iwayQApp-1.0-RELEASE.war iwayq.war
+
+#  - name: Pull Tomcat  Container Image
+#    docker_image:
+#      name: tomcat:9.0.70
+#      source: pull
+
+  - name: Build image and with build args
+    docker_image:
+      name: java-maven-app
+      build:
+        path: /home/imran/
+        pull: yes
+        args:
+          listen_port: 8080
+      state: present
+      source: build
+
+  - name: Log into DockerHub
+    docker_login:
+     username: imransetiadi22
+     password: C3ri497adis77@
+
+  - name: Push to docker hub
+    docker_image:
+      name: java-maven-app
+      repository: imransetiadi22/java-maven-app:1.0
+      push: yes
+      source: local
+
