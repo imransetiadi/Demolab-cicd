@@ -1,3 +1,4 @@
+## Documentation still progress 80%
 Arsitektur CI/CD 
 ![image](https://user-images.githubusercontent.com/22531977/208345070-9612be93-3a85-496c-85cf-0e7f40f2b8b9.png)
 ## Stack Tech Used
