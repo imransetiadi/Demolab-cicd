@@ -492,6 +492,10 @@ Going to Manage Jenkins > Global tool configuration > Sonarqube scanner > Fill d
 Configure Maven
 Login to jenkins web admin > login > going to Manage Jenkins > Manage plugins > Available plugins > Search "Maven" on search box > click checkbox "Maven plugin" > Download and install > restart jenkins
 
+Configure Jfrog
+Login to jenkins web admin > login > going to Manage Jenkins > Manage plugins > Available plugins > Search "Jfrog" on search box > click checkbox "Jfrog plugin" > Download and install > restart jenkins
+
+
 Going to Manage Jenkins > Global tool configuration > Maven > Maven installations > Fill data > Save
 
 Add credentials bitbucket, public key ssh, sonar
