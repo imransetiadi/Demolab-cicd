@@ -14,11 +14,6 @@
   - name: Rename .war Artifact
     command: mv iwayQApp-1.0-RELEASE.war iwayq.war
 
-#  - name: Pull Tomcat  Container Image
-#    docker_image:
-#      name: tomcat:9.0.70
-#      source: pull
-
   - name: Build image and with build args
     docker_image:
       name: java-maven-app
