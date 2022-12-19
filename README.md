@@ -403,6 +403,80 @@ kubectl apply -k ./
 ```
 ![wordpress](https://user-images.githubusercontent.com/22531977/208349139-90d2b836-18f5-4791-b03b-e5a59b0bd8d9.PNG)
 
+## Installation Maven
+1. Download the JDK Binaries
+   ```sh
+   wget https://download.java.net/java/GA/jdk13.0.1/cec27d702aa74d5a8630c65ae61e4305/9/GPL/openjdk-13.0.1_linux-x64_bin.tar.gz
+   tar -xvf openjdk-13.0.1_linux-x64_bin.tar.gz
+   mv jdk-13.0.1 /opt/
+   ```
+2. Setting JAVA_HOME and Path Environment Variables
+   ```sh
+   JAVA_HOME='/opt/jdk-13.0.1'
+   PATH="$JAVA_HOME/bin:$PATH"
+   export PATH
+   ```
+3. Verify the Java Installation
+   ```sh
+   java -version
+   ```
+4. Download the Maven Binaries
+   ```sh
+   wget https://mirrors.estointernet.in/apache/maven/maven-3/3.6.3/binaries/apache-maven-3.6.3-bin.tar.gz  
+   tar -xvf apache-maven-3.6.3-bin.tar.gz
+   mv apache-maven-3.6.3 /opt/
+   ```
+5. Setting M2_HOME and Path Variables
+   ```sh
+   M2_HOME='/opt/apache-maven-3.6.3'
+   PATH="$M2_HOME/bin:$PATH"
+   export PATH
+   ```
+6. Verify the Maven installation
+   ```sh
+   mvn -version
+   Apache Maven 3.6.3 (cecedd343002696d0abb50b32b541b8a6ba2883f)
+   Maven home: /opt/apache-maven-3.6.3
+   Java version: 13.0.1, vendor: Oracle Corporation, runtime: /opt/jdk-13.0.1
+   Default locale: en, platform encoding: UTF-8
+   OS name: "linux", version: "4.15.0-47-generic", arch: "amd64", family: "unix"
+   ```
+## Installation Ansible
+```sh
+sudo apt-add-repository ppa:ansible/ansible
+sudo apt update
+sudo apt install ansible
+```
+## Installation Jfrog Artifactory
+1. Import repository GPG Key
+   ```sh
+   sudo apt update
+   wget -qO - https://api.bintray.com/orgs/jfrog/keys/gpg/public.key | sudo apt-key add -
+   ```
+2. Add JFrog Artifactory to Ubuntu 20.04
+   ```sh
+   echo "deb https://jfrog.bintray.com/artifactory-debs focal main" | sudo tee /etc/apt/sources.list.d/jfrog.list
+   sudo apt update
+   ```
+3. Install JFrog Artifactory on Ubuntu 20.04
+   ```sh
+   sudo apt update
+   sudo apt install jfrog-artifactory-oss
+   ```
+   start and enable service
+   ```sh
+   sudo systemctl start artifactory.service
+   sudo systemctl enable artifactory.service
+   ```
+4. Access Artifactory Web Interface
+   ```sh
+   http://SERVERIP_OR_DOMAIN:8081/artifactory﻿
+   ```
+   The default logins are:
+   ```sh
+   Username: admin
+   Password: password
+   ```
 ## Setup Configuration on Jenkins
 Generate token
 Login to sonarqube web admin > login > going to My Account > Security > Enter token name > Generate token
