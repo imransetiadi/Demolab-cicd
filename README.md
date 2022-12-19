@@ -1,3 +1,5 @@
+Arsitektur CI/CD 
+![image](https://user-images.githubusercontent.com/22531977/208345070-9612be93-3a85-496c-85cf-0e7f40f2b8b9.png)
 ## Stack Tech Used
 1. Kubernetes [1 Master & 1 Worker]
 2. Jenkins
