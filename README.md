@@ -166,7 +166,239 @@ Node: A Node is a system that provides the run-time environments for the contain
    sudo cat /var/lib/jenkins/secrets/initialAdminPassword
    ```
    Copy the 32-character alphanumeric password from the terminal and paste it into the Administrator password field, then click Continue.
-##
+   
+## Installation Gitlab
+1. Installing the Dependencies
+   ```sh
+   sudo apt update
+   sudo apt install ca-certificates curl openssh-server postfix tzdata perl
+   ```
+2. Installing GitLab
+   ```sh
+   cd /tmp
+   curl -LO https://packages.gitlab.com/install/repositories/gitlab/gitlab-ce/script.deb.sh
+   less /tmp/script.deb.sh
+   sudo bash /tmp/script.deb.sh
+   sudo apt install gitlab-ce
+   ```
+3. Adjusting the Firewall Rules
+   ```sh
+   sudo ufw status
+   sudo ufw allow http
+   sudo ufw allow https
+   sudo ufw allow OpenSSH
+   sudo ufw status
+   ```
+4. Editing the GitLab Configuration File
+   ```sh
+   sudo nano /etc/gitlab/gitlab.rb
+   ...
+   ## GitLab URL
+   ##! URL on which GitLab will be reachable.
+   ##! For more details on configuring external_url see:
+   ##! https://docs.gitlab.com/omnibus/settings/configuration.html#configuring-the-external-url-for-gitlab
+   ##!
+   ##! Note: During installation/upgrades, the value of the environment variable
+   ##! EXTERNAL_URL will be used to populate/replace this value.
+   ##! On AWS EC2 instances, we also attempt to fetch the public hostname/IP
+   ##! address from AWS. For more details, see:
+   ##! https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/instancedata-data-retrieval.html
+   external_url 'https://your_domain'
+   ...
+   ```
+5. Reconfigure GitLab:
+   ```sh
+   sudo gitlab-ctl reconfigure
+   ```
+6. Performing Initial Configuration Through the Web Interface
+   ```sh
+   Visit the domain name of your GitLab server in your web browser:
+   https://your_domain
+   ```
+## Installations Sonar CE
+1. Install OpenJDK 11
+   ```sh
+   sudo apt-get install openjdk-11-jdk -y
+   ```
+2. Install and Configure PostgreSQL
+   ```sh
+   sudo sh -c 'echo "deb http://apt.postgresql.org/pub/repos/apt/ `lsb_release -cs`-pgdg main" >> /etc/apt/sources.list.d/pgdg.list'
+   wget -q https://www.postgresql.org/media/keys/ACCC4CF8.asc -O - | sudo apt-key add -
+   sudo apt install postgresql postgresql-contrib -y
+   sudo systemctl enable postgresql
+   sudo systemctl start postgresql
+   sudo passwd postgres
+   su - postgres
+   createuser sonar
+   psql
+   ALTER USER sonar WITH ENCRYPTED password 'my_strong_password';
+   CREATE DATABASE sonarqube OWNER sonar;
+   GRANT ALL PRIVILEGES ON DATABASE sonarqube to sonar;
+   \q
+   exit
+   ```
+3. Download and Install SonarQube
+   ```sh
+   sudo apt-get install zip -y
+   sudo wget https://binaries.sonarsource.com/Distribution/sonarqube/sonarqube-<VERSION_NUMBER>.zip
+   sudo unzip sonarqube-<VERSION_NUMBER>.zip
+   sudo mv sonarqube-<VERSION_NUMBER> /opt/sonarqube
+   ```
+4. Add SonarQube Group and User
+   ```sh
+   sudo groupadd sonar
+   sudo useradd -d /opt/sonarqube -g sonar sonar
+   sudo chown sonar:sonar /opt/sonarqube -R
+   ```
+5. Configure SonarQube
+   ```sh
+   sudo nano /opt/sonarqube/conf/sonar.properties
+   sonar.jdbc.username=sonar
+   sonar.jdbc.password=my_strong_password
+   sonar.jdbc.url=jdbc:postgresql://localhost:5432/sonarqube
+   ```
+   Save and exit the file.
+   Edit the sonar script file.
+   ```sh
+   sudo nano /opt/sonarqube/bin/linux-x86-64/sonar.sh
+   ```
+   About 50 lines down, locate this line:
+   ```sh
+   RUN_AS_USER=sonar
+   ```
+   save and exit the file
+6. Setup Systemd service
+   ```sh
+   sudo nano /etc/systemd/system/sonar.service
+   ```
+   paste the following lines to the file.
+   ```
+   [Unit]
+
+   Description=SonarQube service
+   After=syslog.target network.target
+
+   [Service]
+   Type=forking
+
+   ExecStart=/opt/sonarqube/bin/linux-x86-64/sonar.sh start
+   ExecStop=/opt/sonarqube/bin/linux-x86-64/sonar.sh stop
+
+   User=sonar
+   Group=sonar
+
+   Restart=always
+
+   LimitNOFILE=65536
+   LimitNPROC=4096
+
+   [Install]
+   WantedBy=multi-user.target
+   ```
+   Save and exit the file.
+   Enable the SonarQube service to run at system startup.
+   ```sh
+   sudo systemctl enable sonar
+   sudo systemctl start sonar
+   sudo systemctl status sonar
+   ```
+7. Modify Kernel System Limits
+   ```sh
+   sudo nano /etc/sysctl.conf
+   ```
+   Add the following lines.
+   ```sh
+   vm.max_map_count=262144
+   fs.file-max=65536
+   ulimit -n 65536
+   ulimit -u 4096
+   ```
+   save and Reboot the system to apply the changes.
+   ```sh
+   sudo reboot
+   ```
+8. Access SonarQube Web Interface [username: admin and password: admin]
+   ```sh
+   http://192.0.2.123:9000
+   ```
+## Setup NFS Server and Storage Class for Kubernetes Cluster
+On NFS server node
+```sh
+sudo systemctl status nfs-server
+sudo apt install nfs-kernel-server nfs-common portmap
+sudo start nfs-server
+mkdir -p /srv/nfs/mydata 
+chmod -R 777 /srv/nfs/
+
+sudo echo "/srv/nfs/mydata  *(rw,sync,no_subtree_check,no_root_squash,insecure)" >> /etc/exports
+sudo exportfs -rv
+showmount -e
+```
+On master Node
+```sh
+helm repo add nfs-subdir-external-provisioner https://kubernetes-sigs.github.io/nfs-subdir-external-provisioner/
+
+helm install nfs nfs-subdir-external-provisioner/nfs-subdir-external-provisioner --set nfs.server=10.8.60.205 --set nfs.path=/srv/nfs/mydata --set storageClass.name=nfs --set storageClass.defaultClass=true -n nfs --create-namespace
+```
+## Setup MetalLB for Load Balancer
+On master node
+```sh
+helm repo add metallb https://metallb.github.io/metallb
+helm repo update
+
+vim address-pool.yaml
+configInline:
+    address-pools:
+    - name: default
+      protocol: layer2
+      addresses:
+      - 10.8.60.201-10.8.60.205
+
+helm install metallb metallb/metallb -f address-pool.yaml -n metallb --create-namespace
+```
+## Setup NGINX ingress
+On master node
+```sh
+helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx
+helm repo update
+helm install ingress ingress-nginx/ingress-nginx --set controller.service.loadBalancerIP=10.8.60.214 -n ingress --create-namespace
+```
+kubectl create deployment nginx --image=nginx kubectl expose deploy nginx --port 80 --type LoadBalancer
+## Deploy Aplikasi Nginx 
+On master node
+```sh
+kubectl create deploy nginx-app --image=nginx
+kubectl expose deploy nginx-app --type=LoadBalancer --port=80
+```
+## Deploy mysql & wordpress
+Create a kustomization.yaml 
+```sh
+cat <<EOF >./kustomization.yaml
+secretGenerator:
+- name: mysql-pass
+  literals:
+  - password=YOUR_PASSWORD
+EOF
+```
+Add resource configs for MySQL and WordPress 
+```sh
+curl -LO https://k8s.io/examples/application/wordpress/mysql-deployment.yaml
+curl -LO https://k8s.io/examples/application/wordpress/wordpress-deployment.yaml
+```
+Add them to kustomization.yaml file
+```sh
+cat <<EOF >>./kustomization.yaml
+resources:
+  - mysql-deployment.yaml
+  - wordpress-deployment.yaml
+EOF
+```
+Apply and Verify 
+The kustomization.yaml contains all the resources for deploying a WordPress site and a MySQL database. You can apply the directory by
+```sh
+kubectl apply -k ./
+```
+
 
    
    
