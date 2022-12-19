@@ -504,6 +504,7 @@ Config jenkins pipeline
 Login to jenkins web admin > new item > pipeline > pipeline script from SCM > Fill data
 ![pipeline](https://user-images.githubusercontent.com/22531977/208350034-26aa2f4e-3ab8-450a-a579-c78df2ec9fbc.PNG)
 ![maven](https://user-images.githubusercontent.com/22531977/208350274-ba0cfd29-a28a-4faa-9519-750067b85c14.PNG)
+![imran](https://user-images.githubusercontent.com/22531977/208355225-4e4b82af-b3e9-4ce3-b96b-82e00642c1ac.PNG)
 
 
 
