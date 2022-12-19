@@ -215,6 +215,7 @@ Node: A Node is a system that provides the run-time environments for the contain
    Visit the domain name of your GitLab server in your web browser:
    https://your_domain
    ```
+![2](https://user-images.githubusercontent.com/22531977/208348929-0ccd2a69-a415-4963-a0a1-a558d7189683.PNG)
 ## Installations Sonar CE
 1. Install OpenJDK 11
    ```sh
