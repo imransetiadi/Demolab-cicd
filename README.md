@@ -402,6 +402,29 @@ kubectl apply -k ./
 ```
 ![wordpress](https://user-images.githubusercontent.com/22531977/208349139-90d2b836-18f5-4791-b03b-e5a59b0bd8d9.PNG)
 
+## Setup Configuration on Jenkins
+Generate token
+Login to sonarqube web admin > login > going to My Account > Security > Enter token name > Generate token
+
+Configure sonarqube server
+Login to jenkins web admin > login > going to Manage Jenkins > Configure System > Sonarqube server > Fill data > Save
+
+Configure scanner server
+Login to jenkins web admin > login > going to Manage Jenkins > Manage plugins > Available plugins > Search "sonarqube" on search box > click checkbox "sonarqube" > Download and install > restart jenkins
+
+Going to Manage Jenkins > Global tool configuration > Sonarqube scanner > Fill data > Save
+
+Configure Maven
+Login to jenkins web admin > login > going to Manage Jenkins > Manage plugins > Available plugins > Search "Maven" on search box > click checkbox "Maven plugin" > Download and install > restart jenkins
+
+Going to Manage Jenkins > Global tool configuration > Maven > Maven installations > Fill data > Save
+
+Add credentials bitbucket, public key ssh, sonar
+
+Config jenkins pipeline
+Login to jenkins web admin > new item > pipeline > pipeline script from SCM > Fill data
+![pipeline](https://user-images.githubusercontent.com/22531977/208350034-26aa2f4e-3ab8-450a-a579-c78df2ec9fbc.PNG)
+![maven](https://user-images.githubusercontent.com/22531977/208350274-ba0cfd29-a28a-4faa-9519-750067b85c14.PNG)
 
 
 
