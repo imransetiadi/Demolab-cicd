@@ -142,6 +142,7 @@ Node: A Node is a system that provides the run-time environments for the contain
    ```sh
    watch kubectl get pods --all-namespaces
    ```
+![kubernetes namespaces](https://user-images.githubusercontent.com/22531977/208349345-7bceaf12-944b-43a1-b740-01b0a4023d83.PNG)
 ## Installation Jenkins
 1. First, add the repository key to the system:
    ```sh
@@ -399,6 +400,9 @@ The kustomization.yaml contains all the resources for deploying a WordPress site
 ```sh
 kubectl apply -k ./
 ```
+![wordpress](https://user-images.githubusercontent.com/22531977/208349139-90d2b836-18f5-4791-b03b-e5a59b0bd8d9.PNG)
+
+
 
 
    
